@@ -1,0 +1,47 @@
+module nibble_swapper_tb;
+
+  reg [7:0] test_input;
+reg swap_en;
+reg clk;
+wire [7:0] result;
+
+nibble_swapper uut (
+    .in_data(test_input),
+    .swap_en(swap_en),
+    .clk(clk),
+    .out_data(result)
+);
+
+// Clock generation
+initial begin
+    clk = 0;
+    forever #5 clk = ~clk;  // 10 time units clock period
+end
+
+initial begin
+    // Dump file for waveform
+    $dumpfile("nibble_swapper.vcd");
+    $dumpvars(0, nibble_swapper_tb);
+
+    $display("Time\tclk\tswap_en\tin_data\t\tout_data");
+    $monitor("%0t\t%b\t%b\t%b\t%b", $time, clk, swap_en, test_input, result);
+
+    // Test 1: No swap
+    test_input = 8'b10110011; swap_en = 0; #10;
+
+    // Test 2: Swap enabled
+    swap_en = 1; #10;
+
+    // Test 3: Change input but disable swap (output should hold)
+    test_input = 8'b11110000; swap_en = 0; #10;
+
+    // Test 4: Enable swap again
+    swap_en = 1; #10;
+
+    // Test 5: Disable swap and give another input
+    test_input = 8'b01010101; swap_en = 0; #10;
+
+    $finish;
+end
+
+endmodule
