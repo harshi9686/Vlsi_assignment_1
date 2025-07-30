@@ -1,0 +1,52 @@
+// tb_fsm_even_odd.v
+`timescale 1ns/1ps
+
+module tb_fsm_even_odd;
+
+    reg clk;
+    reg rst;
+    reg [3:0] number;
+    reg valid;
+    wire is_even;
+
+    // Instantiate the DUT
+    fsm_even_odd uut (
+        .clk(clk),
+        .rst(rst),
+        .number(number),
+        .valid(valid),
+        .is_even(is_even)
+    );
+
+    // Clock generation
+    always #5 clk = ~clk;
+
+    integer i;
+
+    initial begin
+        // Dumpfile for GTKWave
+        $dumpfile("fsm_even_odd.vcd");
+        $dumpvars(0, tb_fsm_even_odd);
+
+        $display("Time\tNumber\tis_even");
+        $monitor("%0t\t%d\t%b", $time, number, is_even);
+
+        clk = 0;
+        rst = 1;
+        valid = 0;
+        number = 4'd0;
+
+        #10 rst = 0;
+
+        // Apply inputs
+        for (i = 0; i < 10; i = i + 1) begin
+            @(negedge clk);
+            valid = 1;
+            number = i;  // Use sequential numbers for clarity
+        end
+
+        valid = 0;
+        #50;
+        $finish;
+    end
+endmodule
