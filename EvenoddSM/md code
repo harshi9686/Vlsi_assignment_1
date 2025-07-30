@@ -1,0 +1,30 @@
+// fsm_even_odd.v
+module fsm_even_odd (
+    input clk,
+    input rst,
+    input [3:0] number,
+    input valid,
+    output reg is_even
+);
+
+    // State declaration using parameters (for Verilog compatibility)
+    parameter EVEN = 1'b0;
+    parameter ODD  = 1'b1;
+
+    reg state;
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            state <= EVEN;
+            is_even <= 1'b1;
+        end else if (valid) begin
+            if (number[0] == 1'b0) begin
+                state <= EVEN;
+                is_even <= 1'b1;
+            end else begin
+                state <= ODD;
+                is_even <= 1'b0;
+            end
+        end
+    end
+endmodule
